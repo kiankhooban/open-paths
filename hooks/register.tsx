@@ -62,7 +62,7 @@ async function lookUp($: EngineInterface, paths: string[]): Promise<void> {
   if (cache.size > MAX_CACHE) for (const k of [...cache.keys()].slice(0, cache.size - MAX_CACHE)) cache.delete(k)
 }
 
-// The environment is never read: the home folder comes from where the mod is installed.
+// The home folder comes from where the mod is installed, not from any variable.
 async function ctxOf($: EngineInterface): Promise<Ctx> {
   const cwd = await $.session.cwd().catch(() => undefined)
   if (home === undefined) home = homeOf($.plugin.root, cwd) ?? ''
@@ -164,7 +164,7 @@ export const register: Register = (on, options) => {
     await $.command.register({
       name: 'open-paths',
       description: 'open-paths: click a path, the file opens in its app (/open-paths help)',
-      argumentHint: '[mode|editor|set|unset|folders|tools|toast|reset]',
+      argumentHint: '[setting] [value]   (/open-paths help lists them)',
       immediate: true,
     })
     return next(e)
