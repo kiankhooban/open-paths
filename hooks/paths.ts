@@ -116,6 +116,23 @@ export function findBlocks(text: string): Block[] {
   return scan(text).blocks
 }
 
+/**
+ * The home folder, found without reading the environment: an installed mod lives under
+ * `<home>/.claude/`, else the working directory sits under `/Users/<name>`, `/home/<name>`
+ * or `C:/Users/<name>`. Undefined when neither says, and then `~` paths are not linked.
+ */
+export function homeOf(pluginRoot: string | undefined, cwd: string | undefined): string | undefined {
+  const fwd = (p?: string) => p?.replace(/\\/g, '/')
+  const root = fwd(pluginRoot)
+  const at = root?.indexOf('/.claude/') ?? -1
+  if (root && at > 0) return root.slice(0, at)
+  const m = /^(\/Users\/[^/]+|\/home\/[^/]+|\/root|[A-Za-z]:\/Users\/[^/]+)(?=\/|$)/.exec(fwd(cwd) ?? '')
+  return m?.[1]
+}
+
+/** True for a Windows path (`C:\\…` or `C:/…`). */
+export const isWindowsPath = (p: string | undefined) => !!p && /^[A-Za-z]:[\\/]/.test(p)
+
 /** The absolute path a written path names, or undefined when it cannot be resolved or is a network path. */
 export function resolvePath(p: string, ctx: Ctx): string | undefined {
   if (p.includes('\0')) return undefined

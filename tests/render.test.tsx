@@ -28,7 +28,6 @@ function engine(on: any, opts: Opts = {}) {
   on('session.start', (_$: any, e: any) => ({ cwd: e.cwd }))
   on('session.cwd', () => ({ value: '/Users/me/proj' }))
   on('command.register', () => ({ value: undefined }))
-  on('env.get', (_$: any, e: any) => ({ value: e.name === 'HOME' ? '/Users/me' : undefined }))
   on('ui.toast', (_$: any, e: any) => {
     toasts.push(typeof e === 'string' ? e : (e.text ?? JSON.stringify(e)))
     return { value: undefined }

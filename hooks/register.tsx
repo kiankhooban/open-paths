@@ -2,7 +2,7 @@ import type { EngineInterface, Register } from 'claude-code'
 
 import { actionFor, describe, terminalHref } from './openers'
 import type { Action, Kind, Platform } from './openers'
-import { applyEdits, blockRows, findBlocks, findRefs, hrefOf, linkOf, linkRow, resolvePath, shortLabel } from './paths'
+import { applyEdits, blockRows, findBlocks, findRefs, homeOf, hrefOf, isWindowsPath, linkOf, linkRow, resolvePath, shortLabel } from './paths'
 import type { Ctx, Item, Ref } from './paths'
 import { command, DEFAULTS, prefsOf } from './prefs'
 import type { Prefs } from './prefs'
@@ -62,9 +62,10 @@ async function lookUp($: EngineInterface, paths: string[]): Promise<void> {
   if (cache.size > MAX_CACHE) for (const k of [...cache.keys()].slice(0, cache.size - MAX_CACHE)) cache.delete(k)
 }
 
+// The environment is never read: the home folder comes from where the mod is installed.
 async function ctxOf($: EngineInterface): Promise<Ctx> {
-  if (home === undefined) home = (await $.env.get('HOME').catch(() => undefined)) ?? (await $.env.get('USERPROFILE').catch(() => undefined)) ?? ''
   const cwd = await $.session.cwd().catch(() => undefined)
+  if (home === undefined) home = homeOf($.plugin.root, cwd) ?? ''
   return { home: home || undefined, cwd }
 }
 
@@ -74,7 +75,7 @@ async function ctxOf($: EngineInterface): Promise<Ctx> {
  */
 async function platformOf($: EngineInterface): Promise<Platform | undefined> {
   if (platform) return platform
-  if ((await $.env.get('OS').catch(() => undefined)) === 'Windows_NT') return (platform = 'windows')
+  if (isWindowsPath($.plugin.root) || isWindowsPath(await $.session.cwd().catch(() => undefined))) return (platform = 'windows')
   const r = await $.process.run(['uname', '-sr'], { timeoutMs: 3000 }).catch(() => undefined)
   const s = r?.exitCode === 0 ? r.stdout : ''
   if (/^Darwin/.test(s)) return (platform = 'mac')

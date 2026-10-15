@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'claude-code/testing'
 
-import { applyEdits, blockRows, findBlocks, findRefs, hrefOf, linkify, linkRow, resolvePath } from '../hooks/paths'
+import { applyEdits, blockRows, findBlocks, findRefs, homeOf, hrefOf, isWindowsPath, linkify, linkRow, resolvePath } from '../hooks/paths'
 
 const CTX = { home: '/Users/me', cwd: '/Users/me/proj' }
 const paths = (text: string) => findRefs(text).map(r => r.path)
@@ -44,7 +44,7 @@ describe('findRefs', () => {
   })
 
   test('URLs and existing markdown links are left alone', async () => {
-    expect(paths('see https://x.com/a/b.html and [doc](docs/a.md) or <https://y.io/z.md>')).toEqual([])
+    expect(paths('see https://example.com/a/b.html and [doc](docs/a.md) or <https://y.io/z.md>')).toEqual([])
   })
 
   test('numbers, versions and abbreviations are not paths', async () => {
@@ -161,5 +161,23 @@ describe('review fixes', () => {
     const [b] = findBlocks(text)
     const out = applyEdits(text, blockRows(text, [{ end: b!.end, items: b!.refs.map(ref => ({ ref, href: 'h' })) }]))
     expect(out).toBe('```\ncat a.md\n```\n↳ open  [a.md](h)\n\nNext.')
+  })
+})
+
+describe('home and platform without the environment', () => {
+  test('the home folder comes from where the mod is installed', async () => {
+    expect(homeOf('/Users/ana/.claude/plugins/cache/open-paths/open-paths/0.2.0', '/tmp/x')).toBe('/Users/ana')
+    expect(homeOf('C:\\Users\\ana\\.claude\\plugins\\cache\\op', undefined)).toBe('C:/Users/ana')
+  })
+
+  test('else from the working directory, else nothing', async () => {
+    expect(homeOf('/opt/dev/open-paths', '/home/ana/proj/src')).toBe('/home/ana')
+    expect(homeOf(undefined, '/Users/ana')).toBe('/Users/ana')
+    expect(homeOf('/opt/dev/open-paths', '/srv/app')).toBeUndefined()
+  })
+
+  test('a drive-letter path means Windows', async () => {
+    expect(isWindowsPath('C:\\Users\\ana')).toBe(true)
+    expect(isWindowsPath('/Users/ana')).toBe(false)
   })
 })

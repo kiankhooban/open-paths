@@ -13,7 +13,7 @@ const nameOf = (abs: string) => abs.replace(/\/+$/, '').slice(abs.replace(/\/+$/
 export function remember(index: Touched, abs: string): Touched {
   const name = nameOf(abs)
   if (!name || (!abs.startsWith('/') && !/^[A-Za-z]:\//.test(abs))) return index
-  // A null-prototype copy: a file named __proto__ or constructor is just a name here.
+  // A null-prototype copy, so a file named like one of Object's built-in keys is just a name here.
   const next: Touched = Object.assign(Object.create(null) as Touched, index)
   const had = Object.prototype.hasOwnProperty.call(index, name) ? index[name]! : []
   delete next[name]

@@ -96,7 +96,7 @@ Two limits worth knowing: `.html` and `.svg` open in your browser, which runs th
 | `session.start` | Loads settings and registers the `/open-paths` command. |
 | `command.run` for `/open-paths` | Shows or changes the settings. |
 
-**Reads:** file metadata only (`$.fs.stat`: does the path exist, is it a file or folder, where does a symlink lead); the session's working directory; the environment variables `HOME` / `USERPROFILE` (your home folder, to expand `~`) and `OS` (to recognise Windows). No credentials, tokens or file contents.
+**Reads:** file metadata only (`$.fs.stat`: does the path exist, is it a file or folder, where does a symlink lead); the session's working directory; and the mod's own install folder, to find your home folder for `~` paths. It reads **no environment variables**, credentials, tokens or file contents.
 
 **Stores** (in the mod's own `$.store`, on your machine): your `/open-paths` settings, and the list of file paths Claude's tools touched, capped at 500 names.
 
