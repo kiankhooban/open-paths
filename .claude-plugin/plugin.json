@@ -25,5 +25,6 @@
     "url": "https://github.com/kiankhooban"
   },
   "homepage": "https://github.com/kiankhooban/open-paths",
-  "repository": "https://github.com/kiankhooban/open-paths"
+  "repository": "https://github.com/kiankhooban/open-paths",
+  "icon": "./.claude-plugin/icon.png"
 }

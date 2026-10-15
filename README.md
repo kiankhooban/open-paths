@@ -82,6 +82,38 @@ Claude's replies can be steered by text it reads (a web page, a file), so open-p
 
 Two limits worth knowing: `.html` and `.svg` open in your browser, which runs their scripts exactly as a double-click would; and a file swapped for another in the instant between the click and the open is opened as whatever it now is, as with any opener.
 
+## What it reads, runs and sends
+
+**Sends: nothing.** open-paths makes no network calls. Nothing leaves your machine; the only thing that ever leaves the mod is a file path, handed as an argument to a local program when you click.
+
+**Hooks**, all in `hooks/register.tsx`:
+
+| Hook | What it does |
+|---|---|
+| `ui.render` on `AssistantMessage` | Finds paths in a reply, checks they exist, and draws the reply with those paths as links the mod answers. The stored conversation is not changed. |
+| `ui.render` on `ToolUse` | Adds an `⎿ open` line under Write (or Read/Write/Edit) tool rows. |
+| `tool.call` | After a Read, Write, Edit or NotebookEdit call, remembers the file's path so a bare name in a later reply finds it. It never blocks, changes or reruns a tool call. |
+| `session.start` | Loads settings and registers the `/open-paths` command. |
+| `command.run` for `/open-paths` | Shows or changes the settings. |
+
+**Reads:** file metadata only (`$.fs.stat`: does the path exist, is it a file or folder, where does a symlink lead); the session's working directory; the environment variables `HOME` / `USERPROFILE` (your home folder, to expand `~`) and `OS` (to recognise Windows). No credentials, tokens or file contents.
+
+**Stores** (in the mod's own `$.store`, on your machine): your `/open-paths` settings, and the list of file paths Claude's tools touched, capped at 500 names.
+
+**Runs**, by argument vector with no shell, and only these programs:
+
+| Program | When | Why |
+|---|---|---|
+| `uname -sr` | once per session, on the first click | to tell macOS, Linux and WSL apart |
+| `open <file>`, `open -a <app> <file>`, `open -R <file>`, `open -t <file>` | on a click, macOS | open in the default app, a chosen app, reveal in Finder, or the plain text editor |
+| `xdg-open <file or folder>` | on a click, Linux | open in the default app, or show the folder |
+| `explorer.exe <file>`, `explorer.exe /select,<file>` | on a click, Windows and WSL | open in the default app, or reveal |
+| `wslview <file>`, `wslpath -w <file>` | on a click, WSL | open through Windows, and translate the path for it |
+| `code -g`, `cursor -g`, `zed`, `subl`, `idea --line` | on a click on code, if that editor is chosen | open the editor at the line |
+| `cmd /c <editor command> <file>` | on a click on code, Windows | editor launchers there are `.cmd` files; a name `cmd.exe` would act on is refused first |
+
+`<file>` is always the real path of a file that exists, after the Safety rules above. `<app>` is an app you named yourself with `/open-paths set` or `/open-paths editor`.
+
 ## How it works
 
 A `ui.render` hook on assistant messages finds the paths, resolves them against the session's working directory and home, checks they exist, and draws the reply as markdown whose links the mod answers (`onLinkPress`). A click runs one command, by argument vector with no shell: `open`, `xdg-open`, `cmd /c start`, or your editor's command line. Nothing leaves your machine, and the stored conversation is never changed: only its drawing carries the links.
