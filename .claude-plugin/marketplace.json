@@ -1,0 +1,18 @@
+{
+  "name": "open-paths",
+  "owner": { "name": "Kian Khooban", "url": "https://github.com/kiankhooban" },
+  "metadata": { "description": "Click a file path in Claude Code, the file opens in its app" },
+  "plugins": [
+    {
+      "name": "open-paths",
+      "source": "./",
+      "description": "Click a file path in a Claude Code reply and the file opens in its app: Word, Preview, Excel, VS Code at the line. Not a Finder reveal.",
+      "version": "0.2.0",
+      "author": { "name": "Kian Khooban", "url": "https://github.com/kiankhooban" },
+      "homepage": "https://github.com/kiankhooban/open-paths",
+      "license": "MIT",
+      "category": "productivity",
+      "tags": ["mod", "paths", "links", "open", "files", "editor"]
+    }
+  ]
+}

@@ -1,0 +1,29 @@
+{
+  "name": "open-paths",
+  "version": "0.2.0",
+  "description": "Click a file path in a Claude Code reply and the file opens in its app: Word, Preview, Excel, VS Code for code. Not a Finder reveal.",
+  "userConfig": {
+    "editor": {
+      "type": "string",
+      "title": "Editor",
+      "description": "Where code and text files open: vscode, cursor, zed, sublime, idea, default, or an app name",
+      "default": "vscode"
+    }
+  },
+  "license": "MIT",
+  "keywords": [
+    "mod",
+    "function-hooks",
+    "paths",
+    "links",
+    "open",
+    "files",
+    "editor"
+  ],
+  "author": {
+    "name": "Kian Khooban",
+    "url": "https://github.com/kiankhooban"
+  },
+  "homepage": "https://github.com/kiankhooban/open-paths",
+  "repository": "https://github.com/kiankhooban/open-paths"
+}
