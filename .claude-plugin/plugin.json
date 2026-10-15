@@ -26,5 +26,10 @@
   },
   "homepage": "https://github.com/kiankhooban/open-paths",
   "repository": "https://github.com/kiankhooban/open-paths",
-  "icon": "./.claude-plugin/icon.png"
+  "icon": "./.claude-plugin/icon.png",
+  "displayName": "Open Paths",
+  "supportUrl": "https://github.com/kiankhooban/open-paths/issues",
+  "documentationUrl": "https://github.com/kiankhooban/open-paths#readme",
+  "privacyPolicyUrl": "https://github.com/kiankhooban/open-paths/blob/main/PRIVACY.md",
+  "termsOfServiceUrl": "https://github.com/kiankhooban/open-paths/blob/main/LICENSE"
 }
